@@ -1,0 +1,55 @@
+{{template "base/head" .}}
+<div class="home">
+	<div class="ui stackable middle very relaxed page grid">
+		<div class="sixteen wide center aligned centered column">
+			<div>
+				<img class="logo" src="{{AppSubUrl}}/img/door43.png" />
+			</div>
+			<div class="hero">
+				<h1 class="ui icon header title">
+					Welcome to Door43!
+				</h1>
+			</div>
+		</div>
+	</div>
+	{{if eq .Lang "de-DE"}}
+	{{else if eq .Lang "zh-CN"}}
+	{{else if eq .Lang "fr-FR"}}
+	{{else if eq .Lang "es-ES"}}
+	{{else if eq .Lang "pt-BR"}}
+	{{else if eq .Lang "ru-RU"}}
+	{{else}}
+<div class="ui stackable middle very relaxed page grid">
+
+<div class="sixteen wide left column">
+<p>Door43 is an open-access translation platform for <a href="/Door43/en-legal/wiki/Copyrights-%26-Licensing" target="_blank">open-licensed</a> discipleship resources in any language. Contributors from all over the world work together on this website to create, translate, and distribute legally unrestricted discipleship resources.</p>
+
+<p>Door43 is an open project that is managed by <a href="https://unfoldingword.org/"  target="_blank">unfoldingWord</a> and many volunteers.</p>
+</div>
+
+<div class="eight wide left column">
+<h3>Get Started</h3>
+<p>While you can <a href="/explore">explore</a> the work of various translation projects for various languages by different users,
+to work on your own, you first need to <a href="/user/sign_up">register</a> your own account. This account can both be used here and on <a href="https://unfoldingword.org/translationstudio/" target="_new">translationStudio</a>.
+You can then start a new project in translationStudio by <a href="/user/login">logging in</a> with your account. The repository for your project will then appear on your dashboard here in Door43.</p>
+
+<p>You can join a translation project by "forking" it here and then work on it through translationStudio. <a href="https://help.github.com/articles/fork-a-repo/" target="_new">See this article about working with forks</a> for more information.</p>
+
+<p>
+To learn how to translate, check, publish, and use our tools, check out <a href="https://unfoldingword.org/academy" target="_blank">translationAcademy</a>.
+</p>
+
+<p>
+If you have questions, you can post them on the <a href="https://team43.slack.com/messages/helpdesk" target="_new">#helpdesk</a> channel in Slack (see "Communication") or email <a href="mailto:help@door43.org">help@door43.org</a>.
+</p>
+</div>
+
+<div class="eight wide left column">
+<h3>Communication</h3>
+<p>The Door43 community uses Slack to communicate. When you <a href="https://door43.org/en/slack" target="_blank">join our team on Slack</a>, you can learn about the benefits and challenges of this application and share your ideas with the developers as well as other translators. Slack works well in a Browser or you may download a native client for it as well.</p>
+</div>
+
+</div>
+	{{end}}
+</div>
+{{template "base/footer" .}}
