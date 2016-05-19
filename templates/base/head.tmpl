@@ -24,6 +24,9 @@
 	{{if .RequireSimpleMDE}}
 		<link rel="stylesheet" href="{{AppSubUrl}}/plugins/simplemde/simplemde.min.css">
 		<script src="{{AppSubUrl}}/plugins/simplemde/simplemde.min.js"></script>
+                <script type="text/javascript">
+                       var loadedSimpleMDE = true;
+                </script>
 	{{end}}
 
 	{{if .RequireCodeMirror}}
@@ -32,6 +35,7 @@
 		<script src="{{AppSubUrl}}/plugins/codemirror/mode/meta.js"></script>
 		<script type="text/javascript">
 			CodeMirror.modeURL = "{{AppSubUrl}}/plugins/codemirror/mode/%N/%N.js";
+                        var loadedCodeMirror = true;
 		</script>
 		<link rel="stylesheet" href="{{AppSubUrl}}/plugins/codemirror/lib/codemirror.css">
 	{{end}}
@@ -78,7 +82,8 @@
 									</div>
 									</div>*/}}
 
-								<a class="item" target="_blank" href="{{AppSubUrl}}/" rel="noreferrer">{{.i18n.Tr "help"}}</a>
+								<a class="item" target="_blank" href="{{AppSubUrl}}/about" rel="noreferrer">About Door43</a>
+								<a class="item" target="_blank" href="{{AppSubUrl}}/Door43/ContentTechs/wiki" rel="noreferrer">{{.i18n.Tr "help"}}</a>
 
 								{{if .IsSigned}}
 									<div class="right menu">
@@ -120,7 +125,8 @@
 													<i class="icon octicon octicon-settings"></i>
 													{{.i18n.Tr "your_settings"}}<!-- Your settings -->
 												</a>
-												<a class="item" target="_blank" href="http://gogs.io/docs" rel="noreferrer">
+                                                                                                <a class="item" target="_blank" href="{{AppSubUrl}}/about" rel="noreferrer">About Door43</a>
+												<a class="item" target="_blank" href="{{AppSubUrl}}/Door43/ContentTechs/wiki" rel="noreferrer">
 													<i class="icon octicon octicon-question"></i>
 													{{.i18n.Tr "help"}}<!-- Help -->
 												</a>
