@@ -17,16 +17,16 @@
 	<link rel="shortcut icon" href="{{AppSubUrl}}/img/favicon.png" />
 
 	<script src="{{AppSubUrl}}/js/jquery-1.11.3.min.js"></script>
-        <script src="{{AppSubUrl}}/js/jquery.are-you-sure.js"></script>
+	<script src="{{AppSubUrl}}/js/jquery.are-you-sure.js"></script>
 	<link rel="stylesheet" href="{{AppSubUrl}}/assets/font-awesome/css/font-awesome.min.css">
 	<link rel="stylesheet" href="{{AppSubUrl}}/assets/octicons/octicons.css">
 
 	{{if .RequireSimpleMDE}}
 		<link rel="stylesheet" href="{{AppSubUrl}}/plugins/simplemde/simplemde.min.css">
 		<script src="{{AppSubUrl}}/plugins/simplemde/simplemde.min.js"></script>
-                <script type="text/javascript">
-                       var loadedSimpleMDE = true;
-                </script>
+		<script type="text/javascript">
+			var loadedSimpleMDE = true
+		</script>
 	{{end}}
 
 	{{if .RequireCodeMirror}}
@@ -35,7 +35,9 @@
 		<script src="{{AppSubUrl}}/plugins/codemirror/mode/meta.js"></script>
 		<script type="text/javascript">
 			CodeMirror.modeURL = "{{AppSubUrl}}/plugins/codemirror/mode/%N/%N.js";
-                        var loadedCodeMirror = true;
+			var loadedCodeMirror = true
+			{{if .MdFileExtensions}}var mdFileExtensions = {{.MdFileExtensions}};{{end}}
+			{{if .LineWrapExtensions}}var lineWrapExtensions = {{.LineWrapExtensions}};{{end}}
 		</script>
 		<link rel="stylesheet" href="{{AppSubUrl}}/plugins/codemirror/lib/codemirror.css">
 	{{end}}
