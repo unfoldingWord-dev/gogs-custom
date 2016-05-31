@@ -26,11 +26,6 @@
 		<script src="{{AppSubUrl}}/plugins/simplemde/simplemde.min.js"></script>
 		<script src="{{AppSubUrl}}/plugins/simplemde/loadmode.js"></script>
 		<script src="{{AppSubUrl}}/plugins/simplemde/mode/meta.js"></script>
-		<script type="text/javascript">
-			CodeMirror.modeURL = "{{AppSubUrl}}/plugins/simplemde/mode/%N/%N.js";
-			{{if .MdFileExtensions}}var mdFileExtensions = {{.MdFileExtensions}};{{end}}
-			{{if .LineWrapExtensions}}var lineWrapExtensions = {{.LineWrapExtensions}};{{end}}
-		</script>
 	{{end}}
 
 	<!-- Stylesheet -->
