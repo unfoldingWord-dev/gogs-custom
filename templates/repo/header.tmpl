@@ -4,7 +4,7 @@
 		<div class="ui vertically padded grid head"><!-- start grid -->
 			<div class="column"><!-- start column -->
 				<div class="ui header">
-					<div class="ui huge breadcrumb">
+					<div class="ui left huge breadcrumb">
 						<i class="mega-octicon octicon-{{if .IsPrivate}}lock{{else if .IsMirror}}repo-clone{{else if .IsFork}}repo-forked{{else}}repo{{end}}"></i>
 						<a href="{{AppSubUrl}}/{{.Owner.Name}}">{{.Owner.Name}}</a>
 						<div class="divider"> / </div>
@@ -14,11 +14,6 @@
 					</div>
 
 					<div class="ui right">
-						<div class="ui button" tabindex="0" style="padding: 0; box-shadow: 5px 5px 5px #888888; margin-right: 20px;">
-							<a class="ui button" href="https://live.door43.org/u/{{.Owner.Name}}/{{.Name}}/" style="padding: 7px;">
-								View this on <img src="/img/door43.png" width="20px" valign="middle"/>	
-							</a>
-                                                </div>
 						<div class="ui labeled button" tabindex="0">
 							<a class="ui button" href="{{$.RepoLink}}/action/{{if $.IsWatchingRepo}}un{{end}}watch?redirect_to={{$.Link}}">
 								<i class="icon fa-eye{{if not $.IsWatchingRepo}}-slash{{end}}"></i>{{if $.IsWatchingRepo}}{{$.i18n.Tr "repo.unwatch"}}{{else}}{{$.i18n.Tr "repo.watch"}}{{end}}
@@ -46,6 +41,14 @@
 							</div>
 						{{end}}
 					</div>
+
+                                        <div class="ui middle" style="margin: 0 auto; text-align:center;">
+						<div class="ui button" tabindex="0" style="padding: 0; box-shadow: 5px 5px 5px #888888; margin-top: 1px;">
+							<a href="https://live.door43.org/u/{{.Owner.Name}}/{{.Name}}/" style="padding: 7px;" class="ui button" target="_blank">
+								View this on <img src="/img/door43.png" width="20px" valign="middle"/>	
+							</a>
+                                                </div>
+                                        </div>
 				</div>
 			</div><!-- end column -->
 		</div><!-- end grid -->
