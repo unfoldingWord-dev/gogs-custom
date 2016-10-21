@@ -17,35 +17,26 @@
 	<link rel="shortcut icon" href="{{AppSubUrl}}/img/favicon.png" />
 
 	<script src="{{AppSubUrl}}/js/jquery-1.11.3.min.js"></script>
-        <script src="{{AppSubUrl}}/js/jquery.are-you-sure.js"></script>
-	<link rel="stylesheet" href="{{AppSubUrl}}/assets/font-awesome/css/font-awesome.min.css">
-	<link rel="stylesheet" href="{{AppSubUrl}}/assets/octicons/octicons.css">
+	<script src="{{AppSubUrl}}/js/jquery.are-you-sure.js"></script>
+	<link rel="stylesheet" href="{{AppSubUrl}}/assets/font-awesome-4.6.3/css/font-awesome.min.css">
+	<link rel="stylesheet" href="{{AppSubUrl}}/assets/octicons-4.3.0/octicons.min.css">
 
 	{{if .RequireSimpleMDE}}
-		<link rel="stylesheet" href="{{AppSubUrl}}/plugins/simplemde/simplemde.min.css">
-		<script src="{{AppSubUrl}}/plugins/simplemde/simplemde.min.js"></script>
-                <script type="text/javascript">
-                       var loadedSimpleMDE = true;
-                </script>
-	{{end}}
-
-	{{if .RequireCodeMirror}}
-		<script src="{{AppSubUrl}}/plugins/codemirror/lib/codemirror.js"></script>
-		<script src="{{AppSubUrl}}/plugins/codemirror/addon/mode/loadmode.js"></script>
-		<script src="{{AppSubUrl}}/plugins/codemirror/mode/meta.js"></script>
-		<script type="text/javascript">
-			CodeMirror.modeURL = "{{AppSubUrl}}/plugins/codemirror/mode/%N/%N.js";
-                        var loadedCodeMirror = true;
+		<link rel="stylesheet" href="{{AppSubUrl}}/plugins/simplemde-1.10.1/simplemde.min.css">
+		<script src="{{AppSubUrl}}/plugins/simplemde-1.10.1/simplemde.min.js"></script>
+		<script src="{{AppSubUrl}}/plugins/codemirror-5.17.0/addon/mode/loadmode.js"></script>
+		<script src="{{AppSubUrl}}/plugins/codemirror-5.17.0/mode/meta.js"></script>
+		<script>
+			CodeMirror.modeURL =  "{{AppSubUrl}}/plugins/codemirror-5.17.0/mode/%N/%N.js";
 		</script>
-		<link rel="stylesheet" href="{{AppSubUrl}}/plugins/codemirror/lib/codemirror.css">
 	{{end}}
 
 	<!-- Stylesheet -->
-	<link rel="stylesheet" href="{{AppSubUrl}}/css/semantic.min.css">
+	<link rel="stylesheet" href="{{AppSubUrl}}/css/semantic-2.2.1.min.css">
 	<link rel="stylesheet" href="{{AppSubUrl}}/css/gogs.css?v={{MD5 AppVer}}">
 
 	<!-- JavaScript -->
-	<script src="{{AppSubUrl}}/js/semantic.min.js"></script>
+	<script src="{{AppSubUrl}}/js/semantic-2.2.1.min.js"></script>
 	<script src="{{AppSubUrl}}/js/gogs.js?v={{MD5 AppVer}}"></script>
 
 	<title>{{if .Title}}{{.Title}} - {{end}}{{AppName}}</title>
@@ -82,7 +73,7 @@
 									</div>
 									</div>*/}}
 
-								<a class="item" href="{{AppSubUrl}}/about" rel="noreferrer">About Door43</a>
+								<a class="item" href="{{AppSubUrl}}/Door43/pages/wiki/Welcome-to-Door43%21" rel="noreferrer">About Door43</a>
 								<a class="item" href="{{AppSubUrl}}/Door43/ContentTechs/wiki" rel="noreferrer">{{.i18n.Tr "help"}}</a>
 
 								{{if .IsSigned}}
@@ -128,10 +119,6 @@
 												<a class="item" href="{{AppSubUrl}}/about" rel="noreferrer">
 													<i class="icon octicon octicon-milestone"></i>
 													About Door43
-												</a>
-												<a class="item" href="{{AppSubUrl}}/Door43/ContentTechs/wiki" rel="noreferrer">
-													<i class="icon octicon octicon-question"></i>
-													{{.i18n.Tr "help"}}<!-- Help -->
 												</a>
 												{{if .IsAdmin}}
 													<div class="divider"></div>
