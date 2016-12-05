@@ -1,0 +1,88 @@
+#!/bin/sh
+###########################################################################
+#
+# NAME update - update hashtag table after push of repo
+#
+# DESCRIPTION Called from gitea githook this script parses hashtags from
+#      repo and places them in hashtag table for git
+#
+###########################################################################
+
+. /etc/githook-hashtag.conf
+
+del=" "
+
+bmsql() {
+  psql --username=postgres --dbname=$dbname --no-align --tuples-only --field-separator="$del" <<END
+  $* ;
+END
+}
+
+echo $(date) Updating hashtags $*
+
+refName=$1
+oldRev=$2
+newRev=$3
+user=$4
+
+if [ x$refName = x-d ] ; then
+  set -x
+fi
+
+# what repo am I
+  wd=$(pwd)
+  repo=${wd#*repositories/}
+  noExt=${repo%.git}
+  usr=${repo%/*}
+  rep=${noExt#*/}
+  lang=${rep%%-*}
+
+# log update
+  logDate=$(date +"%y-%m-%d_%H:%M:%S")
+  log="$logDate update: Updating Hashtags $noExt $*"
+  echo "$log" | sudo tee -a  $logFile
+
+# make a place for temp repo
+  b="/tmp/"
+  tmp=$(mktemp -u repo-XXXXXX)
+  files=$b$(mktemp -u files-XXXXXX).txt
+  tags=$b$(mktemp -u tags-XXXXXX).txt
+  inserts=$b$(mktemp -u inserts-XXXXXX).sql
+  sorted=$b$(mktemp -u sorted-XXXXXX).sql
+
+# clone repo
+  cd /tmp
+  git clone $wd $tmp
+  cd $tmp
+  dateStamp=$(date +"%s")
+
+# get user id and repo id
+  userId=$(bmsql "SELECT id FROM \"user\"     WHERE name = \'$usr\'")
+  repoId=$(bmsql "SELECT id FROM repository   WHERE name = \'$rep\'")
+
+# delete all tags for repo pages
+  bmsql "DELETE FROM hashtag WHERE user_id = $userId AND repo_id = $repoId"
+
+# get all pages in repo with markdown
+  > $inserts
+  find ./ -name '*.md' | grep -v '/.git' > $files
+
+  while read fle ; do
+    filePath=${fle#*/}
+
+    # get tags from page
+      grep '^#' $fle | grep -v '^##' | grep -v '^# ' | grep -v '^#v' | sed -e 's/^#//' > $tags
+
+      while read tagName ; do
+        echo "INSERT INTO hashtag(user_id, repo_id, lang, tag_name, file_path, created_unix ) VALUES( $userId, $repoId, '$lang', '$tagName', '$filePath', $dateStamp );" >> $inserts
+      done < $tags
+  done < $files
+
+# write to db
+  sort -u < $inserts > $sorted
+  psql --username=postgres --dbname=$dbname -f $sorted
+
+sudo rm -rf /tmp/repo-* $files $tags $inserts $sorted
+exit 0
+
+
