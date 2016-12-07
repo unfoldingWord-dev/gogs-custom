@@ -13,8 +13,7 @@ myLog() {
   echo "$dte $*" >> $logFile
 }
 
-initDate=$(date +"%Y-%m-%d_%H:%M:%S")
-myLog "$initDate Install githook-hashtag."
+myLog "Install githook-hashtag."
 
 sudo cp githook-hashtag.conf /etc
 sudo cp githook-hashtag-deploy.sh $appDir
