@@ -26,14 +26,14 @@ while [ $# -gt 0 ] ; do
   shift
 done
 
-. /etc/githook-hashtag.conf
+. ./githook-hashtag.conf
 
 del=" "
 
 myLog() {
   echo $*
   dte=$(date +"%Y-%m-%d_%H:%M:%S")
-  echo "$dte $*" >> $logFile
+  echo "$dte $*" >> $logFile/githook-hashtag-deploy.log
 }
 
 plural() {
@@ -48,7 +48,7 @@ plural() {
 
 
 bmsql() {
-  psql --username=postgres --dbname=$dbname --no-align --tuples-only --field-separator="$del" <<END
+  psql --dbname=$dbname --no-align --tuples-only --field-separator="$del" <<END
   $* ;
 END
 }

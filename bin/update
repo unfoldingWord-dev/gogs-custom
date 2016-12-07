@@ -8,7 +8,7 @@
 #
 ###########################################################################
 
-. /etc/githook-hashtag.conf
+. ./githook-hashtag.conf
 
 del=" "
 
@@ -80,7 +80,7 @@ fi
 
 # write to db
   sort -u < $inserts > $sorted
-  psql --username=postgres --dbname=$dbname -f $sorted
+  psql --dbname=$dbname -f $sorted
 
 sudo rm -rf /tmp/repo-* $files $tags $inserts $sorted
 exit 0
