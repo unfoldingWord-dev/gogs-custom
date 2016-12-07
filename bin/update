@@ -8,7 +8,8 @@
 #
 ###########################################################################
 
-. ./githook-hashtag.conf
+myDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+. $myDir/githook-hashtag.conf
 
 del=" "
 
