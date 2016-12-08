@@ -15,12 +15,13 @@ oldRev=$2
 newRev=$3
 ini=$4
 
-. /home/git/gitea/custom/bin/githook-hashtag.conf
+myDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+. $myDir/githook-hashtag.conf
 
 del=" "
 
 bmsql() {
-  psql --username=postgres --dbname=$dbname --no-align --tuples-only --field-separator="$del" <<END
+  psql --dbname=$dbname --no-align --tuples-only --field-separator="$del" <<END
   $* ;
 END
 }
@@ -96,7 +97,7 @@ fi
 
 # write to db
   sort -u < $inserts > $sorted
-  psql --username=postgres --dbname=$dbname -f $sorted
+  psql --dbname=$dbname -f $sorted
 
 sudo rm -rf /tmp/repo-* $files $tags $inserts $sorted
 exit 0
