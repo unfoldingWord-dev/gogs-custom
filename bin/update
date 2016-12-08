@@ -30,7 +30,7 @@ END
 myLog() {
   logDate=$(date +"%y-%m-%d_%H:%M:%S")
   log="$logDate $*"
-  echo "$log" | sudo tee -a  $logFile/githook-hashtag-update.log
+  echo "$log" | tee -a  $logFile/githook-hashtag-update.log
 }
 
 
@@ -99,7 +99,7 @@ fi
   sort -u < $inserts > $sorted
   psql --dbname=$dbname -f $sorted
 
-sudo rm -rf /tmp/repo-* $files $tags $inserts $sorted
+#sudo rm -rf /tmp/repo-* $files $tags $inserts $sorted
 exit 0
 
 
