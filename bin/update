@@ -8,7 +8,14 @@
 #
 ###########################################################################
 
-. /etc/githook-hashtag.conf
+echo $(date) Updating hashtags $*
+
+refName=$1
+oldRev=$2
+newRev=$3
+ini=$4
+
+. /home/git/gitea/custom/bin/githook-hashtag.conf
 
 del=" "
 
@@ -18,12 +25,13 @@ bmsql() {
 END
 }
 
-echo $(date) Updating hashtags $*
 
-refName=$1
-oldRev=$2
-newRev=$3
-user=$4
+myLog() {
+  logDate=$(date +"%y-%m-%d_%H:%M:%S")
+  log="$logDate $*"
+  echo "$log" | sudo tee -a  $logFile/githook-hashtag-update.log
+}
+
 
 if [ x$refName = x-d ] ; then
   set -x
@@ -31,16 +39,24 @@ fi
 
 # what repo am I
   wd=$(pwd)
-  repo=${wd#*repositories/}
+  rwd=${wd%/hooks}
+  repo=${rwd#*repositories/}
   noExt=${repo%.git}
   usr=${repo%/*}
   rep=${noExt#*/}
+
+  myLog "Update: Updating Hashtags $noExt $*"
+
+  case $rep in
+    *-ubn|*-ubn-*) true ;;
+    *)
+      myLog "Error: $rep is not a UBN repo"
+      exit 1
+      ;;
+  esac
+
   lang=${rep%%-*}
 
-# log update
-  logDate=$(date +"%y-%m-%d_%H:%M:%S")
-  log="$logDate update: Updating Hashtags $noExt $*"
-  echo "$log" | sudo tee -a  $logFile
 
 # make a place for temp repo
   b="/tmp/"
@@ -52,13 +68,13 @@ fi
 
 # clone repo
   cd /tmp
-  git clone $wd $tmp
+  git clone $rwd $tmp
   cd $tmp
   dateStamp=$(date +"%s")
 
 # get user id and repo id
-  userId=$(bmsql "SELECT id FROM \"user\"     WHERE name = \'$usr\'")
-  repoId=$(bmsql "SELECT id FROM repository   WHERE name = \'$rep\'")
+  userId=$(bmsql "SELECT id FROM \"user\"     WHERE name = '$usr'")
+  repoId=$(bmsql "SELECT id FROM repository   WHERE name = '$rep' and owner_id = $userId ")
 
 # delete all tags for repo pages
   bmsql "DELETE FROM hashtag WHERE user_id = $userId AND repo_id = $repoId"
