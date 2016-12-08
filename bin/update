@@ -8,7 +8,6 @@
 #
 ###########################################################################
 
-echo $(date) Updating hashtags $*
 
 refName=$1
 oldRev=$2
@@ -30,7 +29,7 @@ END
 myLog() {
   logDate=$(date +"%y-%m-%d_%H:%M:%S")
   log="$logDate $*"
-  echo "$log" | tee -a  $logFile/githook-hashtag-update.log
+  echo "$log" >> $logFile/githook-hashtag-update.log
 }
 
 
@@ -46,15 +45,15 @@ fi
   usr=${repo%/*}
   rep=${noExt#*/}
 
-  myLog "Update: Updating Hashtags $noExt $*"
-
   case $rep in
     *-ubn|*-ubn-*) true ;;
     *)
-      myLog "Error: $rep is not a UBN repo"
+      #myLog "Error: $rep is not a UBN repo"
       exit 1
       ;;
   esac
+
+  myLog "Update: Updating Hashtags $noExt $*"
 
   lang=${rep%%-*}
 
@@ -99,7 +98,7 @@ fi
   sort -u < $inserts > $sorted
   psql --dbname=$dbname -f $sorted
 
-#sudo rm -rf /tmp/repo-* $files $tags $inserts $sorted
+#rm -rf /tmp/repo-* $files $tags $inserts $sorted
 exit 0
 
 
