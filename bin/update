@@ -8,41 +8,69 @@
 #
 ###########################################################################
 
-. /etc/githook-hashtag.conf
+refName=$1
+oldRev=$2
+newRev=$3
+ini=$4
 
-del=" "
+
+readIni() {
+  # config info for githook-hashtag
+  # ini path must be set before calling
+  section=$1
+  attribute=$2
+
+  grep -A 1000 $section $ini | grep -m 1 $attribute | sed -e 's/.*= *//'
+}
+
 
 bmsql() {
-  psql --username=postgres --dbname=$dbname --no-align --tuples-only --field-separator="$del" <<END
+  # call postgress with "csv" like output and no headers
+  psql --dbname=$dbname --no-align --tuples-only --field-separator=" " <<END
   $* ;
 END
 }
 
-echo $(date) Updating hashtags $*
 
-refName=$1
-oldRev=$2
-newRev=$3
-user=$4
+myLog() {
+  # gotta log it somewhere
+  logDate=$(date +"%y-%m-%d_%H:%M:%S")
+  log="$logDate $*"
+  echo "$log" >> $logFile/githook-hashtag-update.log
+}
+
 
 if [ x$refName = x-d ] ; then
   set -x
 fi
 
+# parameters from gogs app.ini
+  repos=$(  readIni repository      ROOT)       # where are repos on this server
+  dbname=$( readIni database        NAME)       # gogs database name
+  logFile=$(readIni log             ROOT_PATH)  # log to
+
 # what repo am I
   wd=$(pwd)
-  repo=${wd#*repositories/}
+  rwd=${wd%/hooks}
+  repo=${rwd#*repositories/}
   noExt=${repo%.git}
   usr=${repo%/*}
   rep=${noExt#*/}
+
+  case $rep in
+    *-ubn|*-ubn-*) true ;;
+    *)
+      myLog "Error: $rep is not a UBN repo"
+      exit 0
+      ;;
+  esac
+
+  myLog "Update: Updating Hashtags $noExt $*"
+
   lang=${rep%%-*}
 
-# log update
-  logDate=$(date +"%y-%m-%d_%H:%M:%S")
-  log="$logDate update: Updating Hashtags $noExt $*"
-  echo "$log" | sudo tee -a  $logFile
 
-# make a place for temp repo
+# make a place for temp repo and other intermediate files
   b="/tmp/"
   tmp=$(mktemp -u repo-XXXXXX)
   files=$b$(mktemp -u files-XXXXXX).txt
@@ -52,13 +80,13 @@ fi
 
 # clone repo
   cd /tmp
-  git clone $wd $tmp
+  git clone $rwd $tmp
   cd $tmp
   dateStamp=$(date +"%s")
 
 # get user id and repo id
-  userId=$(bmsql "SELECT id FROM \"user\"     WHERE name = \'$usr\'")
-  repoId=$(bmsql "SELECT id FROM repository   WHERE name = \'$rep\'")
+  userId=$(bmsql "SELECT id FROM \"user\"     WHERE name = '$usr'")
+  repoId=$(bmsql "SELECT id FROM repository   WHERE name = '$rep' and owner_id = $userId ")
 
 # delete all tags for repo pages
   bmsql "DELETE FROM hashtag WHERE user_id = $userId AND repo_id = $repoId"
@@ -70,7 +98,12 @@ fi
   while read fle ; do
     filePath=${fle#*/}
 
-    # get tags from page
+    # get hashtags from page observing the following rules
+    # 1) only lines with # as first character
+    # 2) No double ## hashtags
+    # 3) No space after hash character
+    # 4) No verse markers "#v"
+
       grep '^#' $fle | grep -v '^##' | grep -v '^# ' | grep -v '^#v' | sed -e 's/^#//' > $tags
 
       while read tagName ; do
@@ -80,9 +113,9 @@ fi
 
 # write to db
   sort -u < $inserts > $sorted
-  psql --username=postgres --dbname=$dbname -f $sorted
+  psql --dbname=$dbname -f $sorted
 
-sudo rm -rf /tmp/repo-* $files $tags $inserts $sorted
+rm -rf $b$tmp 
+rm -f $files $tags $inserts $sorted
 exit 0
-
 
