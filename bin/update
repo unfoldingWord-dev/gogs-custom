@@ -14,7 +14,7 @@ oldRev=$2
 newRev=$3
 ini=$4
 
-myDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+myDir="$( cd "$( dirname $0 )" && pwd )"
 . $myDir/githook-hashtag.conf
 
 del=" "
