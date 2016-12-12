@@ -83,8 +83,8 @@ fi
   dateStamp=$(date +"%s")
 
 # get user id and repo id
-  userId=$(bmsql "SELECT id FROM \"user\"     WHERE name = '$usr'")
-  repoId=$(bmsql "SELECT id FROM repository   WHERE name = '$rep' and owner_id = $userId ")
+  userId=$(bmsql "SELECT id FROM \"user\"     WHERE lower_name = '$usr'")
+  repoId=$(bmsql "SELECT id FROM repository   WHERE lower_name = '$rep' and owner_id = $userId ")
 
 # delete all tags for repo pages
   bmsql "DELETE FROM hashtag WHERE user_id = $userId AND repo_id = $repoId"
