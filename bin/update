@@ -13,6 +13,7 @@ oldRev=$2
 newRev=$3
 ini=$4
 
+
 readIni() {
   # config info for githook-hashtag
   # ini path must be set before calling
@@ -21,6 +22,7 @@ readIni() {
 
   grep -A 1000 $section $ini | grep -m 1 $attribute | sed -e 's/.*= *//'
 }
+
 
 bmsql() {
   # call postgress with "csv" like output and no headers
@@ -58,7 +60,7 @@ fi
   case $rep in
     *-ubn|*-ubn-*) true ;;
     *)
-      #myLog "Error: $rep is not a UBN repo"
+      myLog "Error: $rep is not a UBN repo"
       exit 0
       ;;
   esac
