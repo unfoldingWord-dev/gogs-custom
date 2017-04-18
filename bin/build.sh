@@ -1,35 +1,39 @@
 #!/usr/bin/bash
 
+RELEASES_DIR=/home/git/releases
+GITEA_REPO=https://github.com/unfoldingWord-dev/gogs.git
+CUSTOM_REPO=https://github.com/unfoldingWord-dev/gogs-custom.git
+
 set -e
 
-export GOPATH=/home/git/go
+version=$1 # THIS NEEDS TO BE THE VERSION WE ARE MAKING WITHOUT the "v", e.g. 1.0.0
+
+# MAKE A TEMP go DIRECTORY
+cd $(mktemp -d /tmp/go-XXXX)
+
+# SET GO PATHS FOR COMPILING
+export GOPATH=$(pwd)
 export PATH=/usr/local/go/bin:$GOPATH/bin:$PATH
-export GOGSPATH=$GOPATH/src/code.gitea.io/gitea
-cd $GOGSPATH
 
-tag=$1
+# COMPILE GITEA FROM OUR GITEA_REPO
+go get -d -u code.gitea.io/gitea
+cd code.gitea.io
+rm -rf gitea
+git clone --branch master ${GITEA_REPO} gitea
+cd gitea
+TAGS="bindata" make generate build
 
-git fetch --all
-git pull
-cd custom
-git pull
-cd ..
-git tag -a -f $tag -m "Version $tag for unfoldingWord" 
-git push -f --tags
-#go get -u
-make build
+# SET GITEA PATH
+export GITEA_PATH=${GOPATH}/src/code.gitea.io/gitea
 
-cd /home/git
-rm -rf releases/$tag
-RELEASEPATH=/home/git/releases/$tag/gogs
-mkdir -p $RELEASEPATH
-cp -R $GOGSPATH/public $RELEASEPATH
-cp -R $GOGSPATH/scripts $RELEASEPATH
-cp -R $GOGSPATH/templates $RELEASEPATH
-cp -R $GOGSPATH/custom $RELEASEPATH
-rm -rf $RELEASEPATH/custom/.git $RELEASEPATH/custom/conf/app.ini
-cp $GOGSPATH/gitea $GOGSPATH/LICENSE $GOGSPATH/README* $RELEASEPATH
-tar -cvzf releases/linux_amd64_$tag.tar.gz -C releases/$tag gogs
+# MAKE THE RELEASE DIR
+rm -rf ${RELEASES_DIR}/${version}
+RELEASE_PATH=${RELEASES_DIR}/${version}/gogs
+mkdir -p ${RELEASE_PATH}
 
-export GITHUB_TOKEN="V$tag"
+# COPY IN gitea and make custom dir from $CUSTOM_REPO
+cp ${GITEA_PATH}/gitea ${RELEASE_PATH}
+git clone --branch master ${CUSTOM_REPO} "${RELEASE_PATH}/custom" && rm -rf "${RELEASE_PATH}/custom/.git*"
 
+# TAR IT UP
+tar -cvzf ${RELEASES_DIR}/linux_amd64_${version}.tar.gz -C ${RELEASES_DIR}/${version} gogs
