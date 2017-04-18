@@ -1,0 +1,121 @@
+#!/bin/sh
+###########################################################################
+#
+# NAME update - update hashtag table after push of repo
+#
+# DESCRIPTION Called from gitea githook this script parses hashtags from
+#      repo and places them in hashtag table for git
+#
+###########################################################################
+
+refName=$1
+oldRev=$2
+newRev=$3
+ini=$4
+
+
+readIni() {
+  # config info for githook-hashtag
+  # ini path must be set before calling
+  section=$1
+  attribute=$2
+
+  grep -A 1000 $section $ini | grep -m 1 $attribute | sed -e 's/.*= *//'
+}
+
+
+bmsql() {
+  # call postgress with "csv" like output and no headers
+  psql --dbname=$dbname --no-align --tuples-only --field-separator=" " <<END
+  $* ;
+END
+}
+
+
+myLog() {
+  # gotta log it somewhere
+  logDate=$(date +"%y-%m-%d_%H:%M:%S")
+  log="$logDate $*"
+  echo "$log" >> $logFile/githook-hashtag-update.log
+}
+
+
+if [ x$refName = x-d ] ; then
+  set -x
+fi
+
+# parameters from gogs app.ini
+  repos=$(  readIni repository      ROOT)       # where are repos on this server
+  dbname=$( readIni database        NAME)       # gogs database name
+  logFile=$(readIni log             ROOT_PATH)  # log to
+
+# what repo am I
+  wd=$(pwd)
+  rwd=${wd%/hooks}
+  repo=${rwd#*repositories/}
+  noExt=${repo%.git}
+  usr=${repo%/*}
+  rep=${noExt#*/}
+
+  case $rep in
+    *-ubn|*-ubn-*) true ;;
+    *)
+      myLog "Error: $rep is not a UBN repo"
+      exit 0
+      ;;
+  esac
+
+  myLog "Update: Updating Hashtags $noExt $*"
+
+  lang=${rep%%-*}
+
+
+# make a place for temp repo and other intermediate files
+  b="/tmp/"
+  tmp=$(mktemp -u repo-XXXXXX)
+  files=$b$(mktemp -u files-XXXXXX).txt
+  tags=$b$(mktemp -u tags-XXXXXX).txt
+  inserts=$b$(mktemp -u inserts-XXXXXX).sql
+  sorted=$b$(mktemp -u sorted-XXXXXX).sql
+
+# clone repo
+  cd /tmp
+  git clone $rwd $tmp
+  cd $tmp
+  dateStamp=$(date +"%s")
+
+# get user id and repo id
+  userId=$(bmsql "SELECT id FROM \"user\"     WHERE lower_name = '$usr'")
+  repoId=$(bmsql "SELECT id FROM repository   WHERE lower_name = '$rep' and owner_id = $userId ")
+
+# delete all tags for repo pages
+  bmsql "DELETE FROM hashtag WHERE user_id = $userId AND repo_id = $repoId"
+
+# get all pages in repo with markdown
+  > $inserts
+  find ./ -name '*.md' | grep -v '/.git' > $files
+
+  while read fle ; do
+    filePath=${fle#*/}
+
+    # get hashtags from page observing the following rules
+    # 1) only lines with # as first character
+    # 2) No double ## hashtags
+    # 3) No space after hash character
+    # 4) No verse markers "#v"
+
+      grep '^#' $fle | grep -v '^##' | grep -v '^# ' | grep -v '^#v' | sed -e 's/^#//' > $tags
+
+      while read tagName ; do
+        echo "INSERT INTO hashtag(user_id, repo_id, lang, tag_name, file_path, created_unix ) VALUES( $userId, $repoId, '$lang', '$tagName', '$filePath', $dateStamp );" >> $inserts
+      done < $tags
+  done < $files
+
+# write to db
+  sort -u < $inserts > $sorted
+  psql --dbname=$dbname -f $sorted
+
+rm -rf $b$tmp 
+rm -f $files $tags $inserts $sorted
+exit 0
+
