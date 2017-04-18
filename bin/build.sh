@@ -38,3 +38,4 @@ git clone --branch master ${CUSTOM_REPO} "${RELEASE_PATH}/custom" && rm -rf "${R
 
 # TAR IT UP
 tar -cvzf ${RELEASES_DIR}/linux_amd64_${version}.tar.gz -C ${RELEASES_DIR}/${version} gogs
+
