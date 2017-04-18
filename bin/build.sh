@@ -1,10 +1,11 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
+
+set -e
+set -x
 
 RELEASES_DIR=/home/git/releases
 GITEA_REPO=https://github.com/unfoldingWord-dev/gogs.git
 CUSTOM_REPO=https://github.com/unfoldingWord-dev/gogs-custom.git
-
-set -e
 
 version=$1 # THIS NEEDS TO BE THE VERSION WE ARE MAKING WITHOUT the "v", e.g. 1.0.0
 
@@ -17,7 +18,7 @@ export PATH=/usr/local/go/bin:$GOPATH/bin:$PATH
 
 # COMPILE GITEA FROM OUR GITEA_REPO
 go get -d -u code.gitea.io/gitea
-cd code.gitea.io
+cd src/code.gitea.io
 rm -rf gitea
 git clone --branch master ${GITEA_REPO} gitea
 cd gitea
