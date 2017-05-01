@@ -34,7 +34,7 @@ mkdir -p ${RELEASE_PATH}
 
 # COPY IN gitea and make custom dir from $CUSTOM_REPO
 cp ${GITEA_PATH}/gitea ${RELEASE_PATH}
-git clone --branch master ${CUSTOM_REPO} "${RELEASE_PATH}/custom" && rm -rf "${RELEASE_PATH}/custom/.git*"
+git clone --branch master ${CUSTOM_REPO} "${RELEASE_PATH}/custom" && rm -rf "${RELEASE_PATH}/custom/.git"*
 
 # TAR IT UP
 tar -cvzf ${RELEASES_DIR}/linux_amd64_${version}.tar.gz -C ${RELEASES_DIR}/${version} gogs
